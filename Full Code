@@ -1,0 +1,250 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//a link list will be created to store inventory data
+struct node
+{
+  char item[20];
+  //a location will be assigned to each inventory item as the additional function
+  char location[20];
+  //each node has a pointer pointing to the next node of the list
+  struct node *next;  
+};
+
+//construct a null link list
+struct node *head=0,*tail=0;
+
+//a counter is used to keep track of list length
+int counter=0;
+
+void insertion()
+{
+  //this pointer is used to pass on the value of "next"
+  struct node *temp;
+  char insert_item[20];
+
+  printf("\n\n1.Register an inventory item.\n\nPlease type the item name below.\n");
+       
+  //input the name
+  scanf("%s",insert_item);
+  //condition when the list is null    
+  if(head==0)
+  {
+    //construct a new node
+    struct node *newnode = (struct node *) malloc(sizeof (struct node));
+   // the pointer in the new node now points to tail pointer(Null)
+   newnode->next=tail;
+   //write in the name to the node
+   strcpy(newnode->item,insert_item);
+   counter++;
+   //assign new head pointer
+   head=newnode;
+   return;
+  }
+  //set this to be Null since nothing points to the head pointer
+  for(temp = head; temp!= 0; temp=temp->next)
+  {
+    //if the inserted username is already occupied
+    if(strcmp(temp->item,insert_item)==0)
+    {
+      printf("\n\n\nThis inventory item has already been registered. Please enter another item name.\n");
+      return;
+    }
+    if(strcmp(temp->item,insert_item)!=0)
+    {
+      struct node *newnode = (struct node *) malloc(sizeof (struct node));
+      //set the link of the new node to tail pointer(Null)
+      newnode->next=tail;
+      strcpy(newnode->item,insert_item);
+      counter++;
+      temp->next=newnode;
+      return;
+    }
+  }
+}
+
+//this function allows user to asign warehouse location to inventory items
+void location_assign()
+{
+    struct node *temp;
+    char item_input[20];
+    char location_input[20];
+    printf("\n2. Assign Location\n\nPlease enter the item name:\n\n");
+    scanf("%s",item_input);
+    //check if the item name matches with something in the databasae
+    for(temp = head; temp != 0; temp=temp->next)
+    {
+      //id there is a match
+      if(strcmp(temp->item,item_input)==0)
+      {
+        printf("\nPlease assign a location to %s:\n",item_input);
+        scanf("%s",location_input);
+        //store the lacation numbers one by one in a array because one person are able to go to many places
+        strcpy(temp->location,location_input);
+        //add one to the times the user have use the location function
+        return;
+      }
+
+    }
+    //if the username inserted doesn't match the data
+    printf("\nUsername can not be found.\nplease enter the       correct username or register\n");
+    return;
+}
+
+//this functions allows for the inventory items to be displayed as a list
+void list()
+{
+  struct node *temp;
+  printf("\n The inventory list is as follows\n_________________________________________________\n");
+
+  for(temp = head; temp != NULL; temp=temp->next)
+  {
+    int i=0;
+    while(i<counter)
+    {
+      printf("%s,",temp->item);
+      break;
+    }
+    i++;
+  }
+  return;
+}
+
+//this function allows user to see which items are in a specific warehouse location
+void warehouse_list()
+{
+  struct node *temp;
+  char location_record[20];
+  
+  printf("\nPlease enter the warehouse location:\n");
+  scanf("%s",location_record);
+  printf("\n\nThese are the items stored at this location:\n");
+  
+  for(temp = head; temp != 0; temp=temp->next)
+  {
+    //if there is a match
+    if (strcmp(location_record,temp->location)==0)
+    {
+      int n=0;
+      while(n<counter)
+      {
+      printf("%s,",temp->item);
+      break;
+      }
+      n++;
+    }
+  }
+  return;
+}
+
+//this function allows user to delete inventory items in the list
+void delete_item()
+{
+  struct node *temp;
+  int option;
+  char insert_item[20];
+  
+  printf("\n4.Delete inventory data\n\nPlease enter the item name:\n");
+  scanf("%s",insert_item);
+  for(temp = head; temp != 0; temp=temp->next)
+  {
+    //compare the names to see if there is a match
+    if(0==strcmp(temp->item,insert_item))
+    {
+      printf("\n\nAre you sure you want to delete this item from the inventory?\n\n1.yes\n2.No\n\n");
+      scanf("%d",&option);
+      switch(option)
+      {
+        case 1:
+        //the condition when the temp pointer is head pointer, which means we are deleting the first node
+        if(temp==head)
+        {
+          //set the head pointer to be the link that's about to be deleted
+          head=temp->next;
+          //free the node
+          free(temp);
+          return;
+        }
+        //normal condition
+        if(temp->next==0)
+        {
+          free(temp);
+        } 
+        case 2:
+        return;
+      }
+
+      return;
+    }
+  }
+  //if there isn't a match
+  printf("\n\nThe item cannot be found. You might have already deleted it or you enter a wrong item name.\n");
+  return;
+}
+
+//this functions allows user to update an item name in the inventory
+void edit_inventory()
+{
+  struct node *temp,*totemp;
+  char edit_item[20];
+  char new_item[20];
+  
+  printf("\n6.Edit inventory data\n\nPlease enter the item name:\n");
+  scanf("%s",edit_item);
+  for(temp = head; temp != 0; temp=temp->next)
+  {
+      int k=0;
+      if(0==strcmp(temp->item,edit_item))
+      {
+        while(k<counter)
+        {
+          printf("\nPlease amend the name of this item\n");
+        break;
+        }
+        k++;
+        scanf("%s",new_item);
+        strcpy(temp->item,new_item);
+      }
+  }
+  return;
+}
+
+//driver code
+int main()
+{
+  //select which function to perform
+  for(;;){
+    printf("\n\nPlease select the following functions");
+    printf("\n\n1. Register Inventory Item\n\n2. Assign Location to Inventory Item\n\n3. View Inventory List\n\n4. View Items in Specific Warehouse Location\n\n5. Delete Inventory Data\n\n6. Edit Inventory Data\n\n7. Exit\n\n");
+
+  int option;
+  scanf("%d",&option);
+ 
+  switch(option)
+  {
+    case 1:
+    insertion();
+    break;
+    case 2:
+    location_assign();
+    break;
+    case 3:
+    list();
+    break;
+    case 4:
+    warehouse_list();
+    break;
+    case 5:
+    delete_item();
+    break;
+    case 6:
+    edit_inventory();
+    break;
+    case 7:
+    exit(1);
+    break;
+        }
+      }
+return 0;
+}
