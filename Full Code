@@ -80,9 +80,9 @@ void location_assign()
       {
         printf("\nPlease assign a location to %s:\n",item_input);
         scanf("%s",location_input);
-        //store the lacation numbers one by one in a array because one person are able to go to many places
+        
         strcpy(temp->location,location_input);
-        //add one to the times the user have use the location function
+   
         return;
       }
 
